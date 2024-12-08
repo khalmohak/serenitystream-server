@@ -1,15 +1,14 @@
-// import { Router } from 'express';
-// import { institutionController } from '../controllers';
-// import { auth } from '../middleware/auth';
-
-// const router = Router();
-
-// router.post('/', auth, institutionController.create);
-// router.get('/', auth, institutionController.list);
-// router.get('/:id', auth, institutionController.get);
-// router.put('/:id', auth, institutionController.update);
-
-// export default router;
 import { Router } from 'express';
+import { InstitutionController } from '../controllers/institutionController';
+import { authMiddleware } from '../middleware/auth';
+
 const router = Router();
+
+const institutionController = new InstitutionController();
+
+router.post('/', authMiddleware(), institutionController.create);
+router.get('/', authMiddleware(), institutionController.list);
+router.get('/:id', authMiddleware(), institutionController.get);
+router.put('/:id', authMiddleware(), institutionController.update);
+
 export default router;

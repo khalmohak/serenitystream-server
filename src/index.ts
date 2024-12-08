@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { setupSecurity } from "./config/security.config";
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.config';
+import { config } from './config/config';
 
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(cookieParser());
 
 setupSecurity(app);
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.port; 
 
 AppDataSource.initialize()
   .then(async () => {
@@ -27,6 +28,7 @@ AppDataSource.initialize()
     app.use('/api', routes);
 
     app.listen(PORT, () => {
+      console.log(`Environment: ${config.nodeEnv}`);
       console.log(`Server is running on port ${PORT}`);
     });
   })

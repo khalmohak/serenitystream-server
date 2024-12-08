@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsOptional, IsEnum, Matches, IsUUID } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsOptional, IsEnum, Matches, IsUUID, IsUrl } from 'class-validator';
 import { UserRole } from '../entities';
 
 export class LoginDto {
@@ -40,8 +40,12 @@ export class RegisterDto {
   @IsString()
   phoneNumber: string;
 
-  @IsEnum(UserRole, { message: 'Role must be either user or admin' })
+  @IsEnum(UserRole, { message: 'Role must be either student,instructor or admin' })
   role: string;
+  
+  @IsOptional()
+  @IsUrl()
+  imageUrl: string;
 }
 
 export class ForgotPasswordDto {

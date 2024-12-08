@@ -25,9 +25,15 @@ export class CourseEnrollment {
 
   @ManyToOne(() => User, (user) => user.enrollments, { nullable: false, onDelete: 'CASCADE' })
   user: User;
+  
+  @Column()
+  userId: string;
 
   @ManyToOne(() => Course, { nullable: false, onDelete: 'CASCADE' })
   course: Course;
+  
+  @Column()
+  courseId: string;
 
   @CreateDateColumn()
   enrolledAt: Date; // Automatically sets the enrollment timestamp

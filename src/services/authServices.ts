@@ -4,12 +4,15 @@ import * as bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { AppDataSource } from "../data-source";
 import { HttpException } from "../exceptions/HttpException";
-import { RefreshToken, User, UserVerification } from "../entities";
+import { RefreshToken, User, UserRole, UserVerification } from "../entities";
+import { config } from "../config/config";
+import { Instructor, InstructorType } from "../entities/Instructor";
 
 export class AuthService {
   private userRepository: Repository<User>;
   private tokenRepository: Repository<RefreshToken>;
   private userVerificationRepository: Repository<UserVerification>;
+  private instructorRepository: Repository<Instructor>;
   private readonly JWT_SECRET: string;
   private readonly JWT_REFRESH_SECRET: string;
   private TOKEN_EXPIRY = {
@@ -22,9 +25,9 @@ export class AuthService {
     this.tokenRepository = AppDataSource.getRepository(RefreshToken);
     this.userVerificationRepository =
       AppDataSource.getRepository(UserVerification);
-    this.JWT_SECRET = process.env.JWT_SECRET || "l;ahfgljabfkjabkjanbf";
-    this.JWT_REFRESH_SECRET =
-      process.env.JWT_REFRESH_SECRET || "adkhbgajkhfbahsbfakhfbahfakfbakshjfba";
+    this.instructorRepository = AppDataSource.getRepository(Instructor);
+    this.JWT_SECRET = config.jwt.secret;
+    this.JWT_REFRESH_SECRET = config.jwt.refreshSecret;
   }
 
   public async login(email: string, password: string, deviceInfo: any) {
@@ -106,7 +109,7 @@ export class AuthService {
         role: user.role,
       },
       this.JWT_SECRET,
-      { expiresIn: "15m" },
+      { expiresIn: "24h" },
     );
   }
 
@@ -138,7 +141,8 @@ export class AuthService {
     lastName,
     role,
     phoneNumber,
-    countryCode
+    countryCode,
+    imageUrl
   }) {
     const existingUser = await this.userRepository.findOne({
       where: { email },
@@ -148,7 +152,6 @@ export class AuthService {
       throw new HttpException(400, "Email already registered");
     }
 
-    // Create user
     const user = this.userRepository.create({
       email,
       password,
@@ -156,11 +159,11 @@ export class AuthService {
       lastName,
       phoneNumber,
       countryCode,
-      role
+      role,
+      imageUrl
     });
     await this.userRepository.save(user);
 
-    // Create verification record
     const verification = this.userVerificationRepository.create({
       user,
       emailVerificationToken: uuidv4(),
@@ -169,7 +172,6 @@ export class AuthService {
     
     await this.userVerificationRepository.save(verification);
 
-    // Send verification emails/SMS
     await this.sendVerificationEmail(
       user.email,
       verification.emailVerificationToken,
@@ -179,6 +181,16 @@ export class AuthService {
         phoneNumber,
         verification.phoneVerificationToken,
       );
+    }
+    
+    if(user.role === UserRole.INSTRUCTOR) {
+      const instructor = this.instructorRepository.create({
+        user,
+        type:InstructorType.INDEPENDENT,
+        id:user.id
+      })
+      await this.instructorRepository.save(instructor);
+      console.log("Instructor Created");
     }
 
     return {
@@ -196,7 +208,6 @@ export class AuthService {
   public async forgotPassword(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      // Return success even if email doesn't exist (security best practice)
       return {
         message:
           "If your email is registered, you will receive password reset instructions",
@@ -256,7 +267,6 @@ export class AuthService {
   }
 
   private async sendPasswordResetEmail(email: string, token: string) {
-    // Implement your email sending logic here
     console.log(`Password reset email sent to ${email} with token ${token}`);
   }
   
@@ -298,7 +308,6 @@ export class AuthService {
       throw new HttpException(400, 'Email is already verified');
     }
   
-    // Check if the last token was generated within the last 5 minutes
     const now = new Date();
     const lastEmailSent = verification.emailTokenExpiresAt 
       ? new Date(verification.emailTokenExpiresAt.getTime() - this.TOKEN_EXPIRY.EMAIL)

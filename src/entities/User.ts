@@ -5,65 +5,82 @@ import {
   ManyToOne,
   OneToMany,
   BeforeInsert,
-  BeforeUpdate
-} from 'typeorm';
-import { Institution } from './Institution';
-import { CourseEnrollment } from './CourseEnrollment';
-import { UserProgress } from './UserProgress';
-import * as bcrypt from 'bcrypt';
-import { IsEmail, IsEnum, IsOptional, Length, IsPhoneNumber } from 'class-validator';
-import { Course } from '.';
+  BeforeUpdate,
+  OneToOne,
+} from "typeorm";
+import { Institution } from "./Institution";
+import { CourseEnrollment } from "./CourseEnrollment";
+import { UserProgress } from "./UserProgress";
+import * as bcrypt from "bcrypt";
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  Length,
+  IsPhoneNumber,
+  IsUrl,
+} from "class-validator";
+import { Course } from ".";
+import { Instructor } from "./Instructor";
 
 export enum UserRole {
-  ADMIN = 'admin',
-  INSTRUCTOR = 'instructor',
-  STUDENT = 'student'
+  ADMIN = "admin",
+  INSTRUCTOR = "instructor",
+  STUDENT = "student",
 }
 
-@Entity('users')
+@Entity("users")
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ unique: true })
-  @IsEmail({}, { message: 'Invalid email address' })
+  @IsEmail({}, { message: "Invalid email address" })
   email: string;
 
   @Column()
-  @Length(8, 128, { message: 'Password must be between 8 and 128 characters long' })
+  @Length(8, 128, {
+    message: "Password must be between 8 and 128 characters long",
+  })
   password: string;
 
   @Column()
-  @Length(1, 50, { message: 'First name must be between 1 and 50 characters long' })
+  @Length(1, 50, {
+    message: "First name must be between 1 and 50 characters long",
+  })
   firstName: string;
 
   @Column({ nullable: true })
-  @Length(1, 50, { message: 'Middle name must be between 1 and 50 characters long' })
+  @Length(1, 50, {
+    message: "Middle name must be between 1 and 50 characters long",
+  })
   @IsOptional()
   middleName?: string;
 
   @Column()
-  @Length(1, 50, { message: 'Last name must be between 1 and 50 characters long' })
+  @Length(1, 50, {
+    message: "Last name must be between 1 and 50 characters long",
+  })
   lastName: string;
 
   @Column()
-  // @IsPhoneNumber(null, { message: 'Invalid phone number' })
+  @Length(10, 12, { message: "Invalid Mobile Number" })
   phoneNumber: string;
 
   @Column()
-  @Length(1, 10, { message: 'Country code must be between 1 and 10 characters long' })
+  @Length(1, 10, {
+    message: "Country code must be between 1 and 10 characters long",
+  })
   countryCode: string;
 
-  @Column({ type: 'enum', enum: UserRole })
-  @IsEnum(UserRole, { message: 'Invalid user role' })
+  @Column({ type: "enum", enum: UserRole })
+  @IsEnum(UserRole, { message: "Invalid user role" })
   role: UserRole;
 
   @Column({ nullable: true })
+  @IsUrl({}, { message: "Invalid URL" })
   @IsOptional()
-  institutionId?: string;
-
-  @ManyToOne(() => Institution, (institution) => institution.users, { nullable: true })
-  institution?: Institution;
+  imageUrl?: string;
 
   @OneToMany(() => CourseEnrollment, (enrollment) => enrollment.user)
   enrollments: CourseEnrollment[];
@@ -71,9 +88,18 @@ export class User {
   @OneToMany(() => UserProgress, (progress) => progress.user)
   progress: UserProgress[];
 
-  @OneToMany(() => Course, (course) => course.instructor)
-  createdCourses: Course[];
-  
+  @OneToOne(() => Instructor, (instructor) => instructor.user)
+  instructor?: Instructor;
+
+  // For institutional users
+  @ManyToOne(() => Institution, (institution) => institution.users, {
+    nullable: true,
+  })
+  institution?: Institution;
+
+  @Column({ nullable: true })
+  institutionId?: string;
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {

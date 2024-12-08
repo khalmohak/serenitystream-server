@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { config } from '../config/config';
 import { AuthService } from '../services/authServices';
 
 export class AuthController {
@@ -19,12 +20,11 @@ export class AuthController {
 
       const result = await this.authService.login(email, password, deviceInfo);
 
-      // Set refresh token in HTTP-only cookie
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: config.isProduction,
         sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000 
       });
 
       res.json({
@@ -49,7 +49,7 @@ export class AuthController {
 
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: config.isProduction,
         sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000
       });
@@ -87,7 +87,7 @@ export class AuthController {
   
   public register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, password, firstName, lastName, role, phoneNumber, countryCode } = req.body;
+      const { email, password, firstName, lastName, role, phoneNumber, countryCode, imageUrl } = req.body;
       const result = await this.authService.register({
         email,
         password,
@@ -95,7 +95,8 @@ export class AuthController {
         lastName,
         role,
         phoneNumber, 
-        countryCode
+        countryCode,
+        imageUrl
       });
       res.status(201).json(result);
     } catch (error) {

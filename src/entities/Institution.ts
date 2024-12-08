@@ -9,6 +9,7 @@ import {
 import { User } from './User';
 import { Course } from './Course';
 import { IsString, IsOptional, IsUrl, Length } from 'class-validator';
+import { Instructor } from './Instructor';
 
 @Entity('institutions')
 export class Institution {
@@ -30,11 +31,11 @@ export class Institution {
 
   @Column({ type: 'jsonb', nullable: true })
   @IsOptional()
-  settings?: Record<string, any>; // For institution-specific configuration
+  settings?: Record<string, any>; 
 
   @Column({ nullable: true })
   @IsOptional()
-  logoUrl?: string; // Optional field for the institution's logo URL
+  logoUrl?: string; 
 
   @Column({ type: 'simple-array', nullable: true })
   @IsOptional()
@@ -43,6 +44,9 @@ export class Institution {
   @OneToMany(() => User, (user) => user.institution)
   users: User[];
 
+  @OneToMany(() => Instructor, (instructor) => instructor.institution)
+  instructors: Instructor[];
+  
   @OneToMany(() => Course, (course) => course.institution)
   courses: Course[];
 

@@ -26,11 +26,9 @@
       "@services/*": ["services/*"],
       "@utils/*": ["utils/*"]
     },
-    "typeRoots": [
-          "./node_modules/@types",
-          "./src/types"
-        ]
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "types": ["express", "node"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*","src/types/**/*.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+import { config } from "./config/config";
 import {
   ContentItem,
   Course,
@@ -12,17 +13,18 @@ import {
   UserVerification,
   Module,
 } from "./entities";
+import { Instructor } from "./entities/Instructor";
+import { Review } from "./entities/Review";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "localhost",
-  // port: 5432,
-  port: 5433,
-  username: "testuser",
-  password: "testpass123",
-  database: "testdb",
-  synchronize: true,
-  logging: false,
+  host: config.database.host,
+  port: config.database.port,
+  username: config.database.username,
+  password: config.database.password,
+  database: config.database.database,
+  synchronize: config.isDevelopment,
+  logging: config.isDevelopment,
   entities: [
     User,
     Institution,
@@ -34,6 +36,8 @@ export const AppDataSource = new DataSource({
     ContentItem,
     UserPreferences,
     UserVerification,
+    Instructor,
+    Review
   ],
   migrations: ["src/migrations/*.ts"],
   subscribers: [],
