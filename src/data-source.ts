@@ -13,8 +13,13 @@ import {
   UserVerification,
   Module,
 } from "./entities";
+import { FavoriteCourse } from "./entities/FavoriteCourse";
+import { FavoriteInstructor } from "./entities/FavoriteInstructor";
 import { Instructor } from "./entities/Instructor";
+import { Invoice } from "./entities/Invoice";
+import { Payment } from "./entities/Payment";
 import { Review } from "./entities/Review";
+import { Video } from "./entities/Video";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -37,7 +42,12 @@ export const AppDataSource = new DataSource({
     UserPreferences,
     UserVerification,
     Instructor,
-    Review
+    Review,
+    FavoriteCourse,
+    FavoriteInstructor,
+    Video,
+    Payment,
+    Invoice
   ],
   migrations: ["src/migrations/*.ts"],
   subscribers: [],

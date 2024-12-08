@@ -22,6 +22,8 @@ import {
 } from "class-validator";
 import { Course } from ".";
 import { Instructor } from "./Instructor";
+import { FavoriteInstructor } from "./FavoriteInstructor";
+import { FavoriteCourse } from "./FavoriteCourse";
 
 export enum UserRole {
   ADMIN = "admin",
@@ -90,7 +92,13 @@ export class User {
 
   @OneToOne(() => Instructor, (instructor) => instructor.user)
   instructor?: Instructor;
+  
+  @OneToMany(() => FavoriteInstructor, (instructor) => instructor.instructor)
+  favoriteInstructors: FavoriteInstructor[];
 
+  @OneToMany(() => FavoriteCourse, (course) => course.course)
+  favoriteCourses: FavoriteCourse[];
+  
   // For institutional users
   @ManyToOne(() => Institution, (institution) => institution.users, {
     nullable: true,

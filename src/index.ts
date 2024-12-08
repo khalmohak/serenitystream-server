@@ -6,14 +6,11 @@ import { setupSecurity } from "./config/security.config";
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.config';
 import { config } from './config/config';
-
+import bodyParser from "body-parser";
 
 const app = express();
-app.use(express.json());
+
 app.use(cookieParser());
-
-
-setupSecurity(app);
 
 const PORT = config.port; 
 
@@ -21,7 +18,8 @@ AppDataSource.initialize()
   .then(async () => {
     console.log('Database connection initialized');
 
-    app.use(express.json());
+    app.use(bodyParser.json({ limit: '50mb' }));
+    app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
     setupSecurity(app);
 
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

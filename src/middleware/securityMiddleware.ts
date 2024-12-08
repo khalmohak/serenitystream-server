@@ -77,9 +77,9 @@ export const securityMiddleware = {
 
     // Request size limiter
     requestSizeLimiter: (req: Request, res: Response, next: NextFunction) => {
-        const MAX_BODY_SIZE = '10kb';
+        const MAX_BODY_SIZE = '2048';
         if (req.headers['content-length'] && 
-            parseInt(req.headers['content-length']) > parseInt(MAX_BODY_SIZE) * 1024) {
+            parseInt(req.headers['content-length']) > parseInt(MAX_BODY_SIZE) *1024 * 1024) {
             return res.status(413).json({
                 status: 'error',
                 message: 'Request entity too large'

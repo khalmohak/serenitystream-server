@@ -11,6 +11,8 @@ import { IsUrl, IsOptional, Length, IsEnum } from 'class-validator';
 import { User } from './User';
 import { Course } from './Course';
 import { Institution } from './Institution';
+import { FavoriteCourse } from './FavoriteCourse';
+import { FavoriteInstructor } from './FavoriteInstructor';
 
 export enum InstructorType {
   INSTITUTIONAL = 'institutional',
@@ -62,4 +64,8 @@ export class Instructor {
 
   @OneToMany(() => Course, (course) => course.instructor)
   courses: Course[];
+  
+  @OneToMany(() => FavoriteInstructor, (instructor) => instructor.instructor)
+  favorites: FavoriteInstructor[];
+  
 }

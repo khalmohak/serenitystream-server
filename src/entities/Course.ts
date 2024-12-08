@@ -20,6 +20,7 @@ import {
 import { CourseEnrollment, User } from ".";
 import { Instructor } from "./Instructor";
 import { Review } from "./Review";
+import { FavoriteCourse } from "./FavoriteCourse";
 
 export enum CourseLevel {
   BEGINNER = "beginner",
@@ -89,6 +90,11 @@ export class Course {
   })
   @IsOptional()
   institution: Institution;
+  
+  
+  @Column()
+  @IsOptional()
+  institutionId: string;
 
   @ManyToOne(() => Instructor, (instructor) => instructor.courses)
   instructor: Instructor;
@@ -105,6 +111,9 @@ export class Course {
   @OneToMany(()=>Review, (review)=>review.course)
   reviews: Review[]
 
+  @OneToMany(()=>FavoriteCourse, (course)=>course.course)
+  favorites: FavoriteCourse[]
+  
   @CreateDateColumn()
   createdAt: Date;
 

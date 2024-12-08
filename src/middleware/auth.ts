@@ -20,7 +20,6 @@ export const authMiddleware = (allowedRoles?: string[]) => {
         role: UserRole;
       };
       
-      console.log(decoded)
 
       if (allowedRoles && !allowedRoles.includes(decoded.role)) {
         throw new HttpException(403, "Insufficient permissions");
