@@ -278,4 +278,7 @@ router.post('/forgot-password', validateMiddleware(ForgotPasswordDto), authContr
  */
 router.post('/reset-password', validateMiddleware(ResetPasswordDto), authController.resetPassword);
 
+
+router.get('/me', authMiddleware(), authController.getMe);
+
 export default router;

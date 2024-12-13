@@ -43,7 +43,7 @@ export const securityMiddleware = {
 
     // CORS configuration
     cors: cors({
-        origin: process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:3000',
+        origin:"*", 
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         exposedHeaders: ['Content-Range', 'X-Content-Range'],

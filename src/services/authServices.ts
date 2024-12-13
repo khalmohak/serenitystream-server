@@ -392,4 +392,13 @@ export class AuthService {
     verification.phoneTokenExpiresAt = null;
     await this.userVerificationRepository.save(verification);
   }
+  
+  
+  public async getUser(id:string):Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: {
+        id
+      }
+    });
+  }
 }

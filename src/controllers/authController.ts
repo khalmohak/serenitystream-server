@@ -163,4 +163,17 @@ export class AuthController {
       next(error);
     }
   };
+  
+  public getMe = async (req:Request, res:Response, next:NextFunction) =>{
+    try {
+      //@ts-ignore
+      const user = await this.authService.getUser(req.user.id);
+      res.json({
+        message:"Successfully fetched user details",
+        user
+      })
+    } catch (error) {
+      next(error);
+    }
+  }
 }
